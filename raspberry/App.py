@@ -19,6 +19,6 @@ class App:
         # Todo listen rfid, mqtt next
         print("Listening")
 
-    def play(self, url):
-        path = Downloader.download(url)
+    def play(self, json):
+        path = Downloader.download(json.music)
         playsound(path, True)
