@@ -167,7 +167,7 @@ class ClientFragment : Fragment() {
         }
 
         view.findViewById<ImageButton>(R.id.pause).setOnClickListener {
-            deviceSettings.playBack = "pause"
+            deviceSettings.playBack = "stop"
             publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
             view.findViewById<ImageButton>(R.id.play).visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
