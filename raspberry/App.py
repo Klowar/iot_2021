@@ -8,11 +8,9 @@ from Downloader import Downloader
 HOST = "broker.hivemq.com"
 TOPIC = "radio/raspberry_itis_orion"
 SETTINGS = "radio/raspberry_itis_orion/settings"
-
-PLAYBACKS = {
-    STOP: "stop",
-    PLAY: "play"
-}
+# manipulate commands
+STOP= "stop"
+PLAY= "play"
 
 def daemon(path, block):
     p = multiprocessing.current_process()
@@ -36,10 +34,10 @@ class App:
     def applySettings(self, json):
         if (json.volume != None):
             self.mixer.setvolume(json.volume)
-        if (json.playback == PLAYBACKS.STOP and self.musicProcess != None):
+        if (json.playback == STOP and self.musicProcess != None):
             process = psutil.Process(self.musicProcess.pid)
             process.suspend()
-        if (json.playback == PLAYBACKS.PLAY and self.musicProcess != None):
+        if (json.playback == PLAY and self.musicProcess != None):
             process = psutil.Process(self.musicProcess.pid)
             process.resume()
 

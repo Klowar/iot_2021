@@ -5,3 +5,4 @@ gpiozero
 spidev
 git+https://github.com/pimylifeup/MFRC522-python.git
 playsound
+pyalsaaudio
