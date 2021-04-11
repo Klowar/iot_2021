@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "repeat": {
+            "type": "integer"
+        },
+        "light": {
+            "type": "integer"
+        },
+        "volume": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "repeat",
+        "light",
+        "volume"
+    ]
+}
