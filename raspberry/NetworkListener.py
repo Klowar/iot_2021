@@ -14,13 +14,14 @@ class MqttListener:
 
     def start(self):
         self.client.connect(self.host, 1883, 60)
+        self.client.loop_start()
         print("started")
 
     def on_connect(self, client, userdata, flags, rc):
+        print("On connect")
         if rc == 0:
             print("Connected")
             client.subscribe(self.topic)
-            self.client.loop_start()
         else:
             print("Rejected")
             client.connect(self.host, 1883, 60)
@@ -32,4 +33,5 @@ class MqttListener:
             callback(x)
 
     def subscribe(self, callback):
+        print("Subscribed {}".format(callback))
         self.callbacks.append(callback)
