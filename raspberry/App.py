@@ -1,7 +1,7 @@
 from NetworkListener import MqttListener
 
 HOST="broker.hivemq.com"
-TOPIC="topic/listener"
+TOPIC="radio/raspberry_itis_orion"
 
 class App:
 
