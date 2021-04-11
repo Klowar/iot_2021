@@ -14,11 +14,11 @@ class App:
         self.listener = MqttListener(HOST, TOPIC)
 
     def listen(self):
-        self.listener.start()
         self.listener.subscribe(self.play)
+        self.listener.start()
         # Todo listen rfid, mqtt next
-        print("Listening")
 
     def play(self, json):
+        print("Callback {}".format(json))
         path = Downloader.download(json.music)
         playsound(path, True)

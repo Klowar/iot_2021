@@ -26,9 +26,10 @@ class MqttListener:
             client.connect(self.host, 1883, 60)
 
     def on_message(self, client, userdata, msg):
+        print("Received {}".format(msg.payload))
         x = json.loads(msg.payload, object_hook=lambda d: SimpleNamespace(**d))
         for callback in self.callbacks:
-            callback(self, x)
+            callback(x)
 
     def subscribe(self, callback):
         self.callbacks.append(callback)
