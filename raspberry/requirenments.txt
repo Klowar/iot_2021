@@ -1,4 +1,0 @@
-paho-mqtt
-pi-rc522
-RPi.GPIO
-gpiozero

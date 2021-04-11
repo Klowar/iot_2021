@@ -1,0 +1,7 @@
+paho-mqtt
+pi-rc522
+RPi.GPIO
+gpiozero
+spidev
+git+https://github.com/pimylifeup/MFRC522-python.git
+playsound
