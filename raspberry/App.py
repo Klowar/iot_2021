@@ -29,6 +29,7 @@ class App:
         self.listener.subscribe(self.play)
         self.settingListener.subscribe(self.applySettings)
         self.listener.start()
+        self.settingListener.start()
         # Todo listen rfid, mqtt next
 
     def applySettings(self, json):
