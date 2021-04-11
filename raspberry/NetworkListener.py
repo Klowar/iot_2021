@@ -1,3 +1,5 @@
+import json
+from types import SimpleNamespace
 import paho.mqtt.client as mqtt
 
 class MqttListener:
@@ -5,6 +7,7 @@ class MqttListener:
     def __init__(self, host, topic):
         self.host = host
         self.topic = topic
+        self.callbacks = []
         self.client = client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
@@ -23,5 +26,9 @@ class MqttListener:
             client.connect(self.host, 1883, 60)
 
     def on_message(self, client, userdata, msg):
-        print(msg.topic + " " + str(msg.payload))
+        x = json.loads(msg.payload, object_hook=lambda d: SimpleNamespace(**d))
+        for callback in self.callbacks:
+            callback(self, x)
 
+    def subscribe(self, callback):
+        self.callbacks.append(callback)
