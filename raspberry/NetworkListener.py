@@ -14,7 +14,7 @@ class MqttListener:
 
     def start(self):
         self.client.connect(self.host, 1883, 60)
-        self.client.loop_forever()
+        # self.client.loop_forever()
         print("started")
 
     def on_connect(self, client, userdata, flags, rc):

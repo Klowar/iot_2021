@@ -42,8 +42,6 @@ class App:
             process = psutil.Process(self.musicProcess.pid)
             process.resume()
 
-
-
     def play(self, json):
         print("Callback {}".format(json))
         if (self.musicProcess != None and self.musicProcess.is_alive()):
