@@ -39,7 +39,18 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    //Paho
+    implementation('org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0') {
+        transitive(false)
+    }
+    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
+        transitive(false)
+    }
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
