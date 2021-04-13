@@ -1,3 +1,4 @@
+pygame
 paho-mqtt
 pi-rc522
 RPi.GPIO

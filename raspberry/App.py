@@ -1,7 +1,8 @@
+import pygame
 import psutil
 import alsaaudio
 import multiprocessing
-from playsound import playsound
+# from playsound import playsound
 from NetworkListener import MqttListener
 from Downloader import Downloader
 
@@ -15,7 +16,9 @@ PLAY= "play"
 def daemon(path, block):
     print("Started music daemon")
     p = multiprocessing.current_process()
-    playsound(path, block)
+    pygame.mixer.init()
+    pygame.mixer.music.load(path)
+    pygame.mixer.music.play()
 
 class App:
 
