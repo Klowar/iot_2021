@@ -13,6 +13,7 @@ STOP= "stop"
 PLAY= "play"
 
 def daemon(path, block):
+    print("Started music daemon")
     p = multiprocessing.current_process()
     playsound(path, block)
 
