@@ -47,7 +47,7 @@ class ClientFragment : Fragment() {
                             ).show()
 
                             // Disconnection success, come back to Connect Fragment
-                            findNavController().navigate(R.id.action_ClientFragment_to_ConnectFragment)
+                            findNavController().navigateUp()
                         }
 
                         override fun onFailure(

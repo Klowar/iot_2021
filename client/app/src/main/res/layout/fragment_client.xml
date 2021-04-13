@@ -100,14 +100,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/isRepeat" />
 
-    <Button
-        android:id="@+id/button_publish"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin"
-        android:layout_marginTop="16dp"
-        android:text="@string/button_publish_text"
-        app:layout_constraintBottom_toTopOf="@+id/button_disconnect"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
