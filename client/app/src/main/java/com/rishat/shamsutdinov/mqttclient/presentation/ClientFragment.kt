@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
@@ -185,7 +184,7 @@ class ClientFragment : Fragment() {
         }
 
         view.findViewById<ImageButton>(R.id.play).setOnClickListener {
-            if (deviceSettings.playBack.isNullOrBlank()) {
+            if (deviceSettings.playback.isNullOrBlank()) {
                 if (index >= 0 && index < songs.size) {
                     val data = MusicItem(songs[index].url)
                     if (topic != null) {
@@ -193,7 +192,7 @@ class ClientFragment : Fragment() {
                     }
                 }
             } else {
-                deviceSettings.playBack = "play"
+                deviceSettings.playback = "play"
                 publish(settings, gson.toJson(deviceSettings))
             }
             nowPlaying.postValue(songs[index].name)
@@ -202,7 +201,7 @@ class ClientFragment : Fragment() {
         }
 
         view.findViewById<ImageButton>(R.id.pause).setOnClickListener {
-            deviceSettings.playBack = "stop"
+            deviceSettings.playback = "stop"
             publish(settings, gson.toJson(deviceSettings))
             view.findViewById<ImageButton>(R.id.play).visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
