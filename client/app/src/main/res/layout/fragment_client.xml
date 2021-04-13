@@ -10,6 +10,7 @@
         android:id="@+id/current_track"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:textAlignment="center"
         android:layout_marginTop="@dimen/margin"
         android:layout_marginHorizontal="@dimen/margin"
         android:ellipsize="end"

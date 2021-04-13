@@ -9,28 +9,51 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
+import com.rishat.shamsutdinov.mqttclient.MusicService
 import com.rishat.shamsutdinov.mqttclient.R
 import com.rishat.shamsutdinov.mqttclient.Utils.*
+import com.rishat.shamsutdinov.mqttclient.data.MusicFromNet
 import com.rishat.shamsutdinov.mqttclient.data.MusicItem
 import com.rishat.shamsutdinov.mqttclient.mqqtModule.MQTTClient
 import com.rishat.shamsutdinov.mqttclient.mqqtModule.WirellesDeviceSettings
 import org.eclipse.paho.client.mqttv3.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class ClientFragment : Fragment() {
     private lateinit var mqttClient: MQTTClient
     private var index = 0
     private val deviceSettings = WirellesDeviceSettings()
+    private var songs: MutableList<MusicFromNet> = mutableListOf()
     private val gson = Gson()
+    private lateinit var settings  : String
     private val nowPlaying = MutableLiveData("")
+    private val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("http://ec2-3-131-162-71.us-east-2.compute.amazonaws.com:9000")
+            .build()
+            .create(MusicService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        nowPlaying.observe(this, Observer {
+        nowPlaying.observe(this, {
             view?.findViewById<TextView>(R.id.current_track)?.text = it
+        })
+        retrofit.getSongs().enqueue(object : Callback<MutableList<MusicFromNet>> {
+            override fun onResponse(call: Call<MutableList<MusicFromNet>>, response: Response<MutableList<MusicFromNet>>) {
+                songs = response.body() as MutableList<MusicFromNet>
+            }
+
+            override fun onFailure(call: Call<MutableList<MusicFromNet>>, t: Throwable) {
+                Log.d(this.javaClass.name, t.message.toString())
+            }
+
         })
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -80,6 +103,8 @@ class ClientFragment : Fragment() {
         val clientId = arguments?.getString(MQTT_CLIENT_ID_KEY)
         val username = arguments?.getString(MQTT_USERNAME_KEY)
         val pwd = arguments?.getString(MQTT_PWD_KEY)
+        val topic = arguments?.getString(MQTT_TOPIC_KEY)
+        settings = "$topic/settings"
 
         // Check if passed arguments are valid
         if (serverURI != null &&
@@ -159,23 +184,25 @@ class ClientFragment : Fragment() {
         }
 
         view.findViewById<ImageButton>(R.id.play).setOnClickListener {
-            if (deviceSettings.playBack.isNullOrBlank()) {
-                if (index >= 0 && index < MUSIC_LIST.size) {
-                    val data = MusicItem(MUSIC_LIST[index])
-                    publish(MQTT_TOPIC_MUSIC, gson.toJson(data))
+            if (deviceSettings.playback.isNullOrBlank()) {
+                if (index >= 0 && index < songs.size) {
+                    val data = MusicItem(songs[index].url)
+                    if (topic != null) {
+                        publish(topic, gson.toJson(data))
+                    }
                 }
             } else {
-                deviceSettings.playBack = "play"
-                publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
+                deviceSettings.playback = "play"
+                publish(settings, gson.toJson(deviceSettings))
             }
-            nowPlaying.postValue(procedeLink(MUSIC_LIST[index]))
+            nowPlaying.postValue(songs[index].name)
             view.findViewById<ImageButton>(R.id.pause).visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
         }
 
         view.findViewById<ImageButton>(R.id.pause).setOnClickListener {
-            deviceSettings.playBack = "stop"
-            publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
+            deviceSettings.playback = "stop"
+            publish(settings, gson.toJson(deviceSettings))
             view.findViewById<ImageButton>(R.id.play).visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
             nowPlaying.postValue("")
@@ -183,33 +210,37 @@ class ClientFragment : Fragment() {
 
         view.findViewById<ImageButton>(R.id.next).setOnClickListener {
             val tempIndex = index + 1
-            if (tempIndex < MUSIC_LIST.size) {
+            if (tempIndex < songs.size) {
                 index = tempIndex
             } else {
                 index = 0
             }
-            val data = MusicItem(MUSIC_LIST[index])
-            nowPlaying.postValue(procedeLink(MUSIC_LIST[index]))
-            publish(MQTT_TOPIC_MUSIC, gson.toJson(data))
+            val data = MusicItem(songs[index].url)
+            nowPlaying.postValue(songs[index].name)
+            if (topic != null) {
+                publish(topic, gson.toJson(data))
+            }
         }
         view.findViewById<ImageButton>(R.id.previous).setOnClickListener {
             val tempIndex = index - 1
             if (tempIndex >= 0) {
                 index = tempIndex
             } else {
-                index = MUSIC_LIST.size - 1
+                index = songs.size - 1
             }
-            val data = MusicItem(MUSIC_LIST[index])
-            nowPlaying.postValue(procedeLink(MUSIC_LIST[index]))
-            publish(MQTT_TOPIC_MUSIC, gson.toJson(data))
+            val data = MusicItem(songs[index].url)
+            nowPlaying.postValue(songs[index].name)
+            if (topic != null) {
+                publish(topic, gson.toJson(data))
+            }
         }
         view.findViewById<SwitchMaterial>(R.id.isRepeat).setOnCheckedChangeListener { _, isChecked ->
             deviceSettings.repeat = if (isChecked) 1 else 0
-            publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
+            publish(settings, gson.toJson(deviceSettings))
         }
         view.findViewById<SwitchMaterial>(R.id.light).setOnCheckedChangeListener { _, isChecked ->
             deviceSettings.light = if (isChecked) 1 else 0
-            publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
+            publish(settings, gson.toJson(deviceSettings))
         }
         view.findViewById<SeekBar>(R.id.seekbar)
                 .setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -225,7 +256,7 @@ class ClientFragment : Fragment() {
 
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
                         deviceSettings.volume = seekBar?.progress ?: 100
-                        publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
+                        publish(settings, gson.toJson(deviceSettings))
                     }
 
                 })
@@ -254,7 +285,8 @@ class ClientFragment : Fragment() {
             Log.d(this.javaClass.name, "Impossible to publish, no server connected")
         }
     }
-    private fun procedeLink(link : String) : String {
-       return link.split('/').last()
+
+    private fun procedeLink(link: String): String {
+        return link.split('/').last()
     }
 }
