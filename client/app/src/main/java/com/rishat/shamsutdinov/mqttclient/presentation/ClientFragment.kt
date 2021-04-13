@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
@@ -23,9 +25,13 @@ class ClientFragment : Fragment() {
     private var index = 0
     private val deviceSettings = WirellesDeviceSettings()
     private val gson = Gson()
+    private val nowPlaying = MutableLiveData("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        nowPlaying.observe(this, Observer {
+            view?.findViewById<TextView>(R.id.current_track)?.text = it
+        })
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (mqttClient.isConnected()) {
@@ -35,9 +41,9 @@ class ClientFragment : Fragment() {
                             Log.d(this.javaClass.name, "Disconnected")
 
                             Toast.makeText(
-                                context,
-                                "MQTT Disconnection success",
-                                Toast.LENGTH_SHORT
+                                    context,
+                                    "MQTT Disconnection success",
+                                    Toast.LENGTH_SHORT
                             ).show()
 
                             // Disconnection success, come back to Connect Fragment
@@ -45,8 +51,8 @@ class ClientFragment : Fragment() {
                         }
 
                         override fun onFailure(
-                            asyncActionToken: IMqttToken?,
-                            exception: Throwable?
+                                asyncActionToken: IMqttToken?,
+                                exception: Throwable?
                         ) {
                             Log.d(this.javaClass.name, "Failed to disconnect")
                         }
@@ -59,8 +65,8 @@ class ClientFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_client, container, false)
@@ -77,53 +83,53 @@ class ClientFragment : Fragment() {
 
         // Check if passed arguments are valid
         if (serverURI != null &&
-            clientId != null &&
-            username != null &&
-            pwd != null
+                clientId != null &&
+                username != null &&
+                pwd != null
         ) {
             // Open MQTT Broker communication
             mqttClient = MQTTClient(context, serverURI, clientId)
 
             // Connect and login to MQTT Broker
             mqttClient.connect(username,
-                pwd,
-                object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        Log.d(this.javaClass.name, "Connection success")
-                        mqttClient.setBufferOpts()
-                        Toast.makeText(context, "MQTT Connection success", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    pwd,
+                    object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            Log.d(this.javaClass.name, "Connection success")
+                            mqttClient.setBufferOpts()
+                            Toast.makeText(context, "MQTT Connection success", Toast.LENGTH_SHORT)
+                                    .show()
+                        }
 
-                    override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        Log.d(this.javaClass.name, "Connection failure: ${exception.toString()}")
+                        override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                            Log.d(this.javaClass.name, "Connection failure: ${exception.toString()}")
 
-                        Toast.makeText(
-                            context,
-                            "MQTT Connection fails: ${exception.toString()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            Toast.makeText(
+                                    context,
+                                    "MQTT Connection fails: ${exception.toString()}",
+                                    Toast.LENGTH_SHORT
+                            ).show()
 
-                        // Come back to Connect Fragment
-                        findNavController().navigate(R.id.action_ClientFragment_to_ConnectFragment)
-                    }
-                },
-                object : MqttCallback {
-                    override fun messageArrived(topic: String?, message: MqttMessage?) {
-                        val msg = "Receive message: ${message.toString()} from topic: $topic"
-                        Log.d(this.javaClass.name, msg)
+                            // Come back to Connect Fragment
+                            findNavController().navigate(R.id.action_ClientFragment_to_ConnectFragment)
+                        }
+                    },
+                    object : MqttCallback {
+                        override fun messageArrived(topic: String?, message: MqttMessage?) {
+                            val msg = "Receive message: ${message.toString()} from topic: $topic"
+                            Log.d(this.javaClass.name, msg)
 
-                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    }
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        }
 
-                    override fun connectionLost(cause: Throwable?) {
-                        Log.d(this.javaClass.name, "Connection lost ${cause.toString()}")
-                    }
+                        override fun connectionLost(cause: Throwable?) {
+                            Log.d(this.javaClass.name, "Connection lost ${cause.toString()}")
+                        }
 
-                    override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                        Log.d(this.javaClass.name, "Delivery complete")
-                    }
-                })
+                        override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                            Log.d(this.javaClass.name, "Delivery complete")
+                        }
+                    })
         } else {
             // Arguments are not valid, come back to Connect Fragment
             findNavController().navigate(R.id.action_ClientFragment_to_ConnectFragment)
@@ -137,7 +143,7 @@ class ClientFragment : Fragment() {
                         Log.d(this.javaClass.name, "Disconnected")
 
                         Toast.makeText(context, "MQTT Disconnection success", Toast.LENGTH_SHORT)
-                            .show()
+                                .show()
 
                         // Disconnection success, come back to Connect Fragment
                         findNavController().navigate(R.id.action_ClientFragment_to_ConnectFragment)
@@ -162,6 +168,7 @@ class ClientFragment : Fragment() {
                 deviceSettings.playBack = "play"
                 publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
             }
+            nowPlaying.postValue(procedeLink(MUSIC_LIST[index]))
             view.findViewById<ImageButton>(R.id.pause).visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
         }
@@ -171,6 +178,7 @@ class ClientFragment : Fragment() {
             publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
             view.findViewById<ImageButton>(R.id.play).visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
+            nowPlaying.postValue("")
         }
 
         view.findViewById<ImageButton>(R.id.next).setOnClickListener {
@@ -181,6 +189,7 @@ class ClientFragment : Fragment() {
                 index = 0
             }
             val data = MusicItem(MUSIC_LIST[index])
+            nowPlaying.postValue(procedeLink(MUSIC_LIST[index]))
             publish(MQTT_TOPIC_MUSIC, gson.toJson(data))
         }
         view.findViewById<ImageButton>(R.id.previous).setOnClickListener {
@@ -191,6 +200,7 @@ class ClientFragment : Fragment() {
                 index = MUSIC_LIST.size - 1
             }
             val data = MusicItem(MUSIC_LIST[index])
+            nowPlaying.postValue(procedeLink(MUSIC_LIST[index]))
             publish(MQTT_TOPIC_MUSIC, gson.toJson(data))
         }
         view.findViewById<SwitchMaterial>(R.id.isRepeat).setOnCheckedChangeListener { _, isChecked ->
@@ -202,46 +212,49 @@ class ClientFragment : Fragment() {
             publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
         }
         view.findViewById<SeekBar>(R.id.seekbar)
-            .setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                }
+                .setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(
+                            seekBar: SeekBar?,
+                            progress: Int,
+                            fromUser: Boolean
+                    ) {
+                    }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                }
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    }
 
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    deviceSettings.volume = seekBar?.progress ?: 100
-                    publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
-                }
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        deviceSettings.volume = seekBar?.progress ?: 100
+                        publish(MQTT_TOPIC_SETTINGS, gson.toJson(deviceSettings))
+                    }
 
-            })
+                })
     }
 
     private fun publish(topic: String, message: String) {
         if (mqttClient.isConnected()) {
             mqttClient.publish(topic,
-                message,
-                1,
-                false,
-                object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        val msg = "Publish message: $message to topic: $topic"
-                        Log.d(this.javaClass.name, msg)
-                    }
+                    message,
+                    1,
+                    false,
+                    object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            val msg = "Publish message: $message to topic: $topic"
+                            Log.d(this.javaClass.name, msg)
+                        }
 
-                    override fun onFailure(
-                        asyncActionToken: IMqttToken?,
-                        exception: Throwable?
-                    ) {
-                        Log.d(this.javaClass.name, "Failed to publish message to topic")
-                    }
-                })
+                        override fun onFailure(
+                                asyncActionToken: IMqttToken?,
+                                exception: Throwable?
+                        ) {
+                            Log.d(this.javaClass.name, "Failed to publish message to topic")
+                        }
+                    })
         } else {
             Log.d(this.javaClass.name, "Impossible to publish, no server connected")
         }
+    }
+    private fun procedeLink(link : String) : String {
+       return link.split('/').last()
     }
 }
