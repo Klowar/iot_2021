@@ -21,7 +21,7 @@ export const getApi = async (req: Request, res: Response) => {
             limit: Number(amount)
         });
 
-        return res.status(200).json({ music: songs });
+        return res.status(200).json(songs);
     } catch (e) {
         return res.status(400).json({ error: e});
     }
