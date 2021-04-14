@@ -1,4 +1,4 @@
-# import pygame
+from RFIDListener import RFIDListener
 import psutil
 import alsaaudio
 import multiprocessing
@@ -24,15 +24,24 @@ class App:
         self.mixer = alsaaudio.Mixer()
         self.name = "app"
         self.musicProcess = None
+        self.rfid = RFIDListener()
         self.listener = MqttListener(HOST, TOPIC)
         self.settingListener = MqttListener(HOST, SETTINGS)
 
     def listen(self):
+        self.rfid.subscribe(self.rfidCallback)
+        self.rfid.start()
+
+    def rfidCallback(self, topic):
+        if (self.listener != None and self.settingListener != None):
+            self.listener.stop()
+            self.settingListener.stop()
+            self.listener.setTopic(topic)
+            self.settingListener.setTopic(topic + "/settings")
         self.listener.subscribe(self.play)
         self.settingListener.subscribe(self.applySettings)
         self.listener.start()
         self.settingListener.start()
-        # Todo listen rfid, mqtt next
 
     def applySettings(self, json):
         if (json.volume != None):

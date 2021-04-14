@@ -12,10 +12,17 @@ class MqttListener:
         client.on_connect = self.on_connect
         client.on_message = self.on_message
 
+    def setTopic(self, topic):
+        self.topic = topic
+
     def start(self):
         self.client.connect(self.host, 1883, 60)
         self.client.loop_start()
         print("started")
+
+    def stop(self):
+        self.client.loop_stop()
+        self.client.disconnect()
 
     def on_connect(self, client, userdata, flags, rc):
         print("On connect")
