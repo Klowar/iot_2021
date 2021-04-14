@@ -9,7 +9,7 @@ class RFIDListener:
         self.callbacks = []
         self.reader = SimpleMFRC522()
 
-    def start():
+    def start(self):
         self.rfidThread = Thread(target=self.listen)
         self.rfidThread.start()
 
@@ -18,6 +18,7 @@ class RFIDListener:
         while(text == None and id == None):
             try:
                 id, text = self.reader.read()
+                print(text)
                 if (text != None): self.notify(text)
             except BaseException:
                 sleep(0.2)
