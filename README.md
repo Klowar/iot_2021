@@ -85,8 +85,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 Here's a blank template to get started:
 **To avoid retyping too much info. Do a search and replace with your text editor for the following:**
 `Klowar`, `iot_2021`, `twitter_handle`, `email`, `project_title`, `project_description`
@@ -182,15 +180,15 @@ Project Link: [https://github.com/Klowar/iot_2021](https://github.com/Klowar/iot
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/Klowar/repo.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/Klowar/iot_2021.svg?style=for-the-badge
 [contributors-url]: https://github.com/Klowar/iot_2021/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Klowar/repo.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/Klowar/iot_2021.svg?style=for-the-badge
 [forks-url]: https://github.com/Klowar/iot_2021/network/members
-[stars-shield]: https://img.shields.io/github/stars/Klowar/repo.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/Klowar/iot_2021.svg?style=for-the-badge
 [stars-url]: https://github.com/Klowar/iot_2021/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Klowar/repo.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/Klowar/iot_2021.svg?style=for-the-badge
 [issues-url]: https://github.com/Klowar/iot_2021/issues
-[license-shield]: https://img.shields.io/github/license/Klowar/repo.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/Klowar/iot_2021.svg?style=for-the-badge
 [license-url]: https://github.com/Klowar/iot_2021/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/Klowar
