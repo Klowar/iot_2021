@@ -85,9 +85,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Here's a blank template to get started:
-**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
-`Klowar`, `iot_2021`, `twitter_handle`, `email`, `project_title`, `project_description`
+Radio by MQTT
 
 
 ### Built With
