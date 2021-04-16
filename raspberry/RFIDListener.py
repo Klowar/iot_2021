@@ -18,8 +18,7 @@ class RFIDListener:
         while(text == None and id == None):
             try:
                 id, text = self.reader.read()
-                print(text)
-                if (text != None): self.notify(text)
+                if (text != None): self.notify(text.strip())
             except BaseException:
                 sleep(0.2)
             finally:

@@ -25,7 +25,7 @@ class MqttListener:
         self.client.disconnect()
 
     def on_connect(self, client, userdata, flags, rc):
-        print("On connect")
+        print("On connect", self.topic)
         if rc == 0:
             print("Connected")
             client.subscribe(self.topic)
